@@ -1,26 +1,37 @@
-import { MotionConfig } from 'framer-motion';
-import Header from './components/Header.jsx';
-import Hero from './components/Hero.jsx';
-import Marquee from './components/Marquee.jsx';
-import Manifesto from './components/Manifesto.jsx';
-import Collection from './components/Collection.jsx';
-import Join from './components/Join.jsx';
+import Header, { Announcement } from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
+import { ElementCards, Hero, NewArrivals, ShopByElement, SplitBanner, StudioNotes } from './components/Sections.jsx';
 
 export default function App() {
   return (
-    <MotionConfig reducedMotion="user">
+    <>
+      <Announcement />
       <Header />
       <main>
         <Hero />
-        <Marquee
-          items={['Wearable art', 'Tailored to you', 'Hand-finished', 'Collection 01', 'Made to move']}
+        <NewArrivals />
+        <SplitBanner
+          left="/products/03_water_front.jpg"
+          right="/products/04_water_back.jpg"
+          caption="Element 02 — Water"
+          title={<>The wave,<br />worn on your back.</>}
+          cta="See Water"
+          href="#element-water"
         />
-        <Manifesto />
-        <Collection />
-        <Join />
+        <ShopByElement />
+        <SplitBanner
+          tone="soil"
+          fit="art"
+          left="/panels/soil.jpg"
+          right="/panels/trees.jpg"
+          caption="Elements 03 & 04 — Soil and Trees"
+          title={<>Rooted in the earth.<br />Worn on your back.</>}
+          cta="Get notified"
+        />
+        <ElementCards />
+        <StudioNotes />
       </main>
       <Footer />
-    </MotionConfig>
+    </>
   );
 }
