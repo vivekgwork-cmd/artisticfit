@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "logo": "node scripts/make-logo.mjs",
-    "panels": "node scripts/make-panels.mjs"
+    "images": "node scripts/enhance-images.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

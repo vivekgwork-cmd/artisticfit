@@ -1,0 +1,21 @@
+const base = { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true };
+const make = (d) => (props) => <svg {...base} {...props}>{d}</svg>;
+
+export const BagIcon = make(<><path d="M5 8h14l-1 12H6L5 8Z" /><path d="M9 8V6a3 3 0 0 1 6 0v2" /></>);
+export const MenuIcon = make(<path d="M4 7h16M4 12h16M4 17h16" />);
+export const CloseIcon = make(<path d="M6 6l12 12M18 6 6 18" />);
+export const TruckIcon = make(<><path d="M3 6h11v10H3zM14 10h4l3 3v3h-7" /><circle cx="7" cy="17.5" r="1.8" /><circle cx="17" cy="17.5" r="1.8" /></>);
+export const SwapIcon = make(<><path d="M4 8h14l-3-3M20 16H6l3 3" /></>);
+export const CashIcon = make(<><rect x="3" y="6" width="18" height="12" rx="2" /><circle cx="12" cy="12" r="2.5" /><path d="M6 9v.01M18 15v.01" /></>);
+export const LockIcon = make(<><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></>);
+export const BoltIcon = make(<path d="M13 3 5 14h6l-1 7 8-11h-6l1-7Z" />);
+export const CheckIcon = make(<path d="m5 12 5 5 9-10" />);
+export const ArrowRight = make(<path d="M5 12h14M13 6l6 6-6 6" />);
+export const ArrowLeft = make(<path d="M19 12H5M11 6l-6 6 6 6" />);
+export const ChevronDown = make(<path d="m6 9 6 6 6-6" />);
+export const RulerIcon = make(<><path d="M3 16 16 3l5 5L8 21l-5-5Z" /><path d="m7 12 2 2M10 9l2 2M13 6l2 2" /></>);
+export const TrashIcon = make(<><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" /></>);
+export const TagIcon = make(<><path d="M3 12V4h8l10 10-8 8L3 12Z" /><circle cx="7.5" cy="8.5" r="1.3" /></>);
+export const SparkIcon = make(<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6" />);
+export const MinusIcon = make(<path d="M6 12h12" />);
+export const PlusIcon = make(<path d="M12 6v12M6 12h12" />);

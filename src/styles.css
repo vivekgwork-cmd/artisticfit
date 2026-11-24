@@ -49,10 +49,24 @@ button { font: inherit; color: inherit; }
 .header { position: sticky; top: 0; z-index: 50; background: var(--paper); border-bottom: 1px solid var(--line); }
 .nav { display: flex; align-items: center; gap: 56px; height: 64px; }
 .nav-logo img { height: 34px; width: auto; }
-.nav-links { display: flex; gap: 40px; list-style: none; font-size: .9rem; text-transform: uppercase; }
+.nav-links { display: flex; gap: 32px; list-style: none; font-size: .85rem; text-transform: uppercase; letter-spacing: .03em; }
+.nav-links a { padding: 6px 0; border-bottom: 1.5px solid transparent; transition: color .2s, border-color .2s; }
 .nav-links a:hover { color: var(--ember); }
+.nav-links a.is-active { border-color: var(--ink); }
+.nav-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+.menu-btn { display: none; background: none; border: 0; padding: 6px; margin-left: -6px; cursor: pointer; }
+.cart-btn {
+  position: relative; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%;
+  background: none; border: 0; cursor: pointer; transition: background .2s;
+}
+.cart-btn:hover { background: var(--stone-2); }
+.cart-btn.is-bump { animation: bump .5s ease; }
+@keyframes bump { 30% { transform: scale(1.18); } 60% { transform: scale(.95); } }
+.cart-count {
+  position: absolute; top: 3px; right: 1px; min-width: 19px; height: 19px; padding: 0 5px; border-radius: 999px;
+  background: var(--ember); color: var(--bone); font-size: .68rem; font-weight: 700; line-height: 19px; text-align: center;
+}
 .nav-cta {
-  margin-left: auto;
   font-size: .85rem; padding: 9px 20px; border-radius: 999px;
   background: var(--ink); color: var(--bone);
   transition: background .25s;
@@ -72,14 +86,15 @@ button { font: inherit; color: inherit; }
   display: flex; justify-content: center; align-items: center; gap: clamp(10px, 1.4vw, 22px);
   padding-bottom: 24px;
 }
-.hero-panels figure { flex: none; }
+.hero-panel { flex: none; display: block; transition: transform .5s ease; }
+.hero-panel:hover { transform: translateY(-8px); }
 .hero-panels img {
   height: calc(min(80vh, 780px) * .66); width: auto;
   outline: 1px solid rgba(233, 226, 214, .35); outline-offset: 6px;
   box-shadow: 0 30px 60px -20px rgba(0, 0, 0, .7);
 }
-.hero-panels figcaption {
-  margin-top: 18px; text-align: center;
+.hero-panel-cap {
+  display: block; margin-top: 18px; text-align: center;
   font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(233, 226, 214, .7);
 }
 .hero-panels .kanji { margin-right: 8px; font-size: .95rem; letter-spacing: 0; color: var(--bone); }
@@ -97,14 +112,19 @@ button { font: inherit; color: inherit; }
   width: 34px; height: 34px; line-height: 34px; text-align: center;
   background: var(--ember); color: var(--bone); border-radius: 3px;
 }
-.hero-bottom { position: absolute; left: 48px; right: 48px; bottom: 40px; display: flex; justify-content: space-between; align-items: end; gap: 32px; }
-.hero-copy { max-width: 22rem; text-align: right; font-size: 1.05rem; line-height: 1.4; color: rgba(233, 226, 214, .85); }
+.hero-panels { padding-left: 34%; }
+.hero-bottom { position: absolute; left: 48px; bottom: 48px; max-width: 30%; }
+.hero-pitch h1 { font-size: clamp(2.2rem, 3.6vw, 3.6rem); line-height: 1.02; letter-spacing: -.02em; font-weight: 700; color: var(--bone); }
+.hero-copy { margin-top: 16px; max-width: 24rem; font-size: 1.05rem; line-height: 1.45; color: rgba(233, 226, 214, .85); }
+.hero-ctas { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
 .hero-cta {
-  font-size: .95rem; padding: 14px 28px; border-radius: 999px;
-  background: var(--bone); color: var(--ink);
+  font-size: .95rem; font-weight: 600; padding: 15px 28px; border-radius: 999px;
+  background: var(--ember); color: var(--bone);
   transition: background .25s, color .25s;
 }
-.hero-cta:hover { background: var(--ember); color: var(--bone); }
+.hero-cta:hover { background: var(--bone); color: var(--ink); }
+.hero-cta--ghost { background: transparent; color: var(--bone); box-shadow: inset 0 0 0 1px rgba(233, 226, 214, .5); font-weight: 400; }
+.hero-cta--ghost:hover { background: rgba(233, 226, 214, .12); color: var(--bone); }
 
 /* ---------- Rails ---------- */
 .rail-section { padding: 72px 0 0; }
@@ -149,8 +169,9 @@ button { font: inherit; color: inherit; }
 .tab.is-active { background: var(--ink); color: var(--bone); }
 
 /* ---------- Product card ---------- */
-.card { display: block; }
+.card { display: block; min-width: 0; }
 .card-media { position: relative; background: var(--stone); border-radius: var(--radius); overflow: hidden; aspect-ratio: 1 / 1; }
+.card-link { position: absolute; inset: 0; }
 .card-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity .6s ease, transform .8s ease; }
 .card-media .card-back { opacity: 0; }
 .card:hover .card-back { opacity: 1; }
@@ -159,7 +180,22 @@ button { font: inherit; color: inherit; }
   position: absolute; top: 18px; left: 18px; z-index: 1;
   padding: 6px 14px; border-radius: 999px; font-size: .72rem; color: var(--bone);
 }
-.card-info { padding: 14px 2px 0; }
+.card-info { display: block; padding: 14px 2px 0; }
+.card-colour { color: var(--ink-soft); }
+.card-sub { display: block; margin-top: 2px; font-size: .82rem; color: var(--muted); }
+.card .card-price { font-size: 1rem; font-weight: 700; color: var(--ink); }
+.quick { position: absolute; left: 12px; right: 12px; bottom: 12px; z-index: 2; opacity: 0; transform: translateY(8px); transition: opacity .25s, transform .25s; }
+.card:hover .quick, .quick.is-open, .quick:focus-within { opacity: 1; transform: none; }
+.quick-btn, .quick-sizes {
+  width: 100%; border: 0; border-radius: 999px; background: rgba(238, 234, 227, .96); backdrop-filter: blur(6px);
+  box-shadow: 0 8px 20px -10px rgba(0, 0, 0, .4);
+}
+.quick-btn { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; font-size: .9rem; font-weight: 600; cursor: pointer; }
+.quick-btn:hover { background: var(--ink); color: var(--bone); }
+.quick-sizes { display: flex; padding: 4px; gap: 2px; }
+.quick-sizes button { flex: 1; border: 0; background: none; border-radius: 999px; padding: 9px 0; font-size: .82rem; font-weight: 600; cursor: pointer; }
+.quick-sizes button:hover { background: var(--ink); color: var(--bone); }
+@media (hover: none) { .quick { opacity: 1; transform: none; } }
 .card-kicker { display: block; font-size: .64rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
 .card-row { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
 .card-name { font-size: 1.05rem; }

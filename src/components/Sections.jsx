@@ -1,16 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Carousel from './Carousel.jsx';
 import ProductCard from './ProductCard.jsx';
-import { PRODUCTS, byKey } from '../data/products.js';
+import { Accordion } from './Bits.jsx';
+import { ArrowRight } from './Icons.jsx';
+import { Link } from '../lib/router.jsx';
+import { inr } from '../lib/pricing.js';
+import { PRODUCTS, byKey, productTitle } from '../data/products.js';
+import { FAQ } from '../data/store.js';
+import { productImg, SIZES } from '../lib/images.js';
 
-const ViewAll = ({ href = '#notify', label = 'View all' }) => (
-  <a className="pill-btn" href={href}>
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true">
-      <rect x="3" y="2.5" width="9" height="13" rx="1.5" /><path d="M5.5 6h4M5.5 9h4M5.5 12h2.5M12 6.5h2.5v9H6" />
-    </svg>
-    {label}
-  </a>
-);
+const FROM = Math.min(...PRODUCTS.map((p) => p.price));
 
 export function Hero() {
   return (
@@ -18,18 +17,24 @@ export function Hero() {
       <div className="hero-media">
         <div className="hero-panels">
           {PRODUCTS.map((p) => (
-            <figure key={p.key}>
-              <img src={`/panels/${p.key}.jpg`} alt={`${p.name} artwork`} width="424" height="1112" />
-              <figcaption><span className="kanji">{p.kanji}</span>{p.name}</figcaption>
-            </figure>
+            <Link to={`/p/${p.key}`} key={p.key} className="hero-panel" aria-label={`Shop ${productTitle(p)}`}>
+              <img src={`/panels/${p.key}.jpg`} alt={`${p.name} artwork`} width="594" height="1557" />
+              <span className="hero-panel-cap"><span className="kanji">{p.kanji}</span>{p.name}</span>
+            </Link>
           ))}
         </div>
         <div className="hero-overlay">
           <p className="hero-tag">Collection 01<br />The Elements</p>
           <p className="hero-kanji" aria-hidden="true">火水土木風</p>
           <div className="hero-bottom">
-            <a href="#notify" className="hero-cta">Get early access</a>
-            <p className="hero-copy">Five elements, drawn in the old woodblock way and printed across the back of an oversized tee.</p>
+            <div className="hero-pitch">
+              <h1>Art you wear<br />on your back.</h1>
+              <p className="hero-copy">Five woodblock-style prints on heavyweight oversized tees. {inr(FROM)} each, free shipping on two or more.</p>
+              <div className="hero-ctas">
+                <Link to="/shop" className="hero-cta">Shop the collection</Link>
+                <Link to="/?s=elements" className="hero-cta hero-cta--ghost">Find your element</Link>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -37,9 +42,13 @@ export function Hero() {
   );
 }
 
-export function NewArrivals() {
+export function Bestsellers() {
   return (
-    <Carousel title="New Arrivals" id="new" footer={<ViewAll />}>
+    <Carousel
+      title="Shop the collection"
+      id="new"
+      footer={<Link className="pill-btn" to="/shop">View all 5 tees <ArrowRight width="18" height="18" /></Link>}
+    >
       {PRODUCTS.map((p) => <ProductCard p={p} key={p.key} />)}
     </Carousel>
   );
@@ -47,24 +56,7 @@ export function NewArrivals() {
 
 // Tabs per element: front, back and a close look at the print.
 export function ShopByElement() {
-  const fromHash = () => {
-    const k = window.location.hash.replace('#element-', '');
-    return byKey[k] ? k : null;
-  };
-  const [tab, setTab] = useState(() => fromHash() ?? 'fire');
-
-  useEffect(() => {
-    const onHash = () => {
-      const k = fromHash();
-      if (k) {
-        setTab(k);
-        document.getElementById('elements')?.scrollIntoView();
-      }
-    };
-    window.addEventListener('hashchange', onHash);
-    return () => window.removeEventListener('hashchange', onHash);
-  }, []);
-
+  const [tab, setTab] = useState('fire');
   const p = byKey[tab];
   const tabs = (
     <div className="tabs" role="tablist">
@@ -77,40 +69,77 @@ export function ShopByElement() {
   );
 
   const views = [
-    { label: 'Front', sub: 'Artistic Fit oval, centre chest', src: `/products/${p.front}`, kind: 'photo' },
-    { label: 'Back', sub: p.line, src: `/products/${p.back}`, kind: 'photo' },
-    { label: 'The print', sub: `${p.name} — full artwork panel`, src: `/panels/${p.key}.jpg`, kind: 'art' },
+    { label: 'Front', sub: 'Quiet: just the Artistic Fit oval', file: p.front, src: `/products/${p.front}`, kind: 'photo' },
+    { label: 'Back', sub: p.line, file: p.back, src: `/products/${p.back}`, kind: 'photo' },
+    { label: 'The print', sub: 'Full artwork panel', src: `/panels/${p.key}.jpg`, kind: 'art' },
   ];
 
   return (
-    <Carousel title="Shop by Element" id="elements" tabs={tabs} resetKey={tab} footer={<ViewAll label={`Notify me about ${p.name}`} />}>
+    <Carousel
+      title="Find your element"
+      id="elements"
+      tabs={tabs}
+      resetKey={tab}
+      footer={<Link className="btn btn--lg" to={`/p/${p.key}`}>Shop {p.name} · {inr(p.price)} <ArrowRight width="18" height="18" /></Link>}
+    >
       {views.map((v) => (
-        <figure className={`view view--${v.kind}`} key={v.label} style={{ '--tee': p.tee }}>
+        <Link to={`/p/${p.key}`} className={`view view--${v.kind}`} key={v.label} style={{ '--tee': p.tee }}>
           <div className="view-media">
-            <img src={v.src} alt={`${p.name} T-shirt — ${v.label.toLowerCase()}`} loading="lazy" decoding="async" />
+            <img {...(v.file ? productImg(v.file, SIZES.card) : { src: v.src })} alt={`${productTitle(p)}, ${v.label.toLowerCase()}`} loading="lazy" decoding="async" />
           </div>
-          <figcaption className="card-info">
+          <div className="card-info">
             <span className="card-kicker">{p.name} · {p.colour}</span>
             <div className="card-row">
               <span className="card-name">{v.label}</span>
               <span className="card-price">{v.sub}</span>
             </div>
-          </figcaption>
-        </figure>
+          </div>
+        </Link>
       ))}
     </Carousel>
   );
 }
 
-export function SplitBanner({ left, right, caption, title, cta, href = '#notify', tone = 'stone', fit = 'photo' }) {
+export function SplitBanner({ left, right, caption, title, ctas = [], tone = 'stone', fit = 'photo' }) {
+  const src = (x) => (x.startsWith('/') ? { src: x } : productImg(x, SIZES.banner));
   return (
     <section className={`banner banner--${tone}`}>
-      <img className={`banner-side banner-side--left banner-side--${fit}`} src={left} alt="" loading="lazy" decoding="async" />
-      <img className={`banner-side banner-side--right banner-side--${fit}`} src={right} alt="" loading="lazy" decoding="async" />
+      <img className={`banner-side banner-side--left banner-side--${fit}`} {...src(left)} alt="" loading="lazy" decoding="async" />
+      <img className={`banner-side banner-side--right banner-side--${fit}`} {...src(right)} alt="" loading="lazy" decoding="async" />
       <div className="banner-text">
         {caption && <p className="banner-caption">{caption}</p>}
         <h2>{title}</h2>
-        {cta && <a className="banner-cta" href={href}>{cta}</a>}
+        {ctas.length > 0 && (
+          <div className="banner-ctas">
+            {ctas.map(([label, to]) => <Link key={to} className="banner-cta" to={to}>{label}</Link>)}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+const WHY = [
+  ['01', 'Art first', 'Each element starts as an original drawing in the spirit of old woodblock prints, then gets framed across the back like a print on a gallery wall.'],
+  ['02', 'Built heavy', 'A thick, structured 240 GSM cotton that holds its boxy shape wash after wash, with no see-through and no sag.'],
+  ['03', 'Cut oversized', 'Dropped shoulders, a wide body and a longer sleeve. Relaxed, never sloppy.'],
+  ['04', 'Quiet front', 'All the art lives on the back. The front keeps it simple with a small Artistic Fit oval, so it works anywhere.'],
+];
+
+export function WhyUs() {
+  return (
+    <section className="why" id="why">
+      <div className="wrap">
+        <h2 className="section-title">Why it’s worth wearing</h2>
+        <div className="why-grid">
+          {WHY.map(([n, t, d]) => (
+            <div className="why-item" key={n}>
+              <span className="why-no">{n}</span>
+              <h3>{t}</h3>
+              <p>{d}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -118,26 +147,25 @@ export function SplitBanner({ left, right, caption, title, cta, href = '#notify'
 
 export function ElementCards() {
   return (
-    <Carousel title="The Five Elements" id="collections">
+    <Carousel title="The five elements" id="collections">
       {PRODUCTS.map((p) => (
-        <a className="collection-card" href={`#element-${p.key}`} key={p.key} style={{ '--tint': p.tee }}>
-          <img src={`/panels/${p.key}.jpg`} alt="" width="424" height="1112" loading="lazy" decoding="async" />
+        <Link className="collection-card" to={`/p/${p.key}`} key={p.key} style={{ '--tint': p.tee }}>
+          <img src={`/panels/${p.key}.jpg`} alt="" width="594" height="1557" loading="lazy" decoding="async" />
           <span className="collection-kanji" aria-hidden="true">{p.kanji}</span>
           <span className="collection-text">
             <strong>{p.name}</strong>
             <small>{p.line}</small>
+            <em>Shop now · {inr(p.price)}</em>
           </span>
-          <svg className="collection-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
-            <path d="M4 10h12M11 5l5 5-5 5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </a>
+          <ArrowRight className="collection-arrow" width="20" height="20" />
+        </Link>
       ))}
     </Carousel>
   );
 }
 
 const NOTES = [
-  'Every element starts as a drawing — fire, water, soil, trees and air, carved out in the spirit of old woodblock prints.',
+  'Every element starts as a drawing: fire, water, soil, trees and air, carved out in the spirit of old woodblock prints.',
   'The art lives on the back, framed like a print on a gallery wall. The front keeps it quiet: just the oval.',
   'Oversized, dropped-shoulder tees in colours pulled straight from each artwork.',
 ];
@@ -153,6 +181,23 @@ export function StudioNotes() {
           {NOTES.map((n) => <p key={n}>{n}</p>)}
         </div>
         <p className="notes-by">— Notes from the Artistic Fit studio</p>
+        <Link to="/shop" className="btn btn--lg notes-cta">Shop the collection</Link>
+      </div>
+    </section>
+  );
+}
+
+export function Faq() {
+  return (
+    <section className="faq" id="faq">
+      <div className="wrap faq-grid">
+        <div>
+          <h2 className="section-title">Questions, answered</h2>
+          <p className="muted faq-sub">Something else? Write to <a href="mailto:hello@artisticfit.com">hello@artisticfit.com</a> and we’ll reply within a day.</p>
+        </div>
+        <div className="faq-list">
+          {FAQ.map(([q, a], i) => <Accordion key={q} title={q} defaultOpen={i === 0}><p>{a}</p></Accordion>)}
+        </div>
       </div>
     </section>
   );
